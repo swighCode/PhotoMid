@@ -1,6 +1,8 @@
 # PhotoMid
 This project is a primtive version of photomath, written in python using OpenCV and pyTesseract.
 
+<img width="1350" alt="photomid" src="https://user-images.githubusercontent.com/126884012/232875664-4ad2dfed-df64-4554-8fe0-61ebbb054f93.png">
+
 
 Requirements: For this project to work, you need to do the follow steps (we'll probably be too lazy to make an exe to do it for you).
 
