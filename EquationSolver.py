@@ -1,5 +1,6 @@
 import numpy as np
 import re
+from OpenCv import ocr
 
 #This function is meant to solve linear systems from an array of linear equations. 
 #It will return the solution to the system in parametric form.
@@ -30,9 +31,19 @@ def equation_solver(equations = []):
     solution = np.linalg.solve(coeffMatrix, constMatrix)
     return solution
 
+def ocr_solve(file_name):
+    img, equations = ocr(file_name)
+    solution = equation_solver(equations)
+    return solution
+
+def only_eq_solve(equations):
+    solution = equation_solver(equations)
+    return solution
+
 def main():
     #Test the function.
-    print(equation_solver(["2x + 3y + 4z = 5", "6x + 7y + 8z = 9", "10x + 11y + 12z = 13"]))
+    # print(equation_solver(["2x + 3y + 4z = 5", "6x + 7y + 8z = 9", "10x + 11y + 12z = 13"]))
+    print(ocr_solve("pic.png"))
     return
 
 main()

@@ -2,7 +2,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPixmap
+import numpy as np
 from OpenCv import ocr
+from EquationSolver import only_eq_solve
 
 
 class App(QWidget):
@@ -22,24 +24,33 @@ class App(QWidget):
         self.create_gui()
 
     def create_gui(self):
-        img, equations = ocr("pic2.png")
-        equations_string = " ".join(equations)
+
+        file_name = "pic.png"
+
+        img, equations = ocr(file_name)
+        equations_string = "\n".join(equations)
+
+        solution = only_eq_solve(equations)
+        solution_string = np.array2string(solution, separator=' ')
 
         # Add the labels to a QVBoxLayout
         layout = QVBoxLayout()
 
         # displayed objects in GUI
-        image = QPixmap("pic2.png")
+        image = QPixmap(file_name)
         label_image = QLabel()
         label_image.setPixmap(image)
         label_input = QLabel("Image input:")
         label_r_input = QLabel()
-        label_r_input.setText(equations_string)
+        input_string = "Equation recognized: \n" + equations_string
+        label_r_input.setText(input_string)
         button_y = QPushButton("I recognize this image")
         button_y.clicked.connect(self.on_clicked_y)
         button_n = QPushButton("I do NOT recognize this image")
         button_n.clicked.connect(self.on_clicked_n)
-        label_output = QLabel("Answer output:")
+        label_output = QLabel()
+        output_string = "Equation solution: \n" + solution_string
+        label_output.setText(output_string)
         textbox = QTextEdit()
 
         # displayed object's order in GUI

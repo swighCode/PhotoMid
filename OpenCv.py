@@ -47,7 +47,7 @@ def ocr(image_name):
 # Main function
 def main():
     # Insert name of image
-    image_name = 'pic2.png'
+    image_name = 'pic.png'
 
     # Call the OCR function
     img, text = ocr(image_name)
