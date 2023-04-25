@@ -1,17 +1,18 @@
+import cv2
+import pytesseract
+import os
 
-import cv2
-import pytesseract
-import numpy as np
-import os
-import cv2
-import pytesseract
-import numpy as np
-import os
-#OCR function
-def ocr(image_path):
-    pytesseract.pytesseract.tesseract_cmd = 'C:\\Users\\bowst\\kth\\inda\\Private\\Tesser\\Tesseract-OCR\\tesseract.exe'
+
+# OCR function
+def ocr(image_name):
+    pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract'
+
+    # Get image path
+    path = os.path.dirname(os.path.abspath(__file__))
+    image = os.path.join(path, image_name)
+
     # Load the image
-    img = cv2.imread(image_path)
+    img = cv2.imread(image)
 
     # Convert the image to grayscale
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -29,7 +30,7 @@ def ocr(image_path):
     print('OCR detected the following equations:')
     for line in lines:
         print(line)
-    confirm = input('Is this correct? (Y/N) ').strip().lower() == 'y'
+    confirm = input('Is this correct? (y/n) ').strip().lower()
 
     # If the detected equations are not correct, prompt the user to input them manually
     if not confirm:
@@ -40,19 +41,18 @@ def ocr(image_path):
             lines.append(line)
 
     # Return the list of equations
-    return lines
+    return img, lines
 
 
-#Main function
+# Main function
 def main():
-    #Get the path of the image
-    path = os.path.dirname(os.path.abspath(__file__))
-    image = os.path.join(path, 'pic2.png')
+    # Insert name of image
+    image_name = 'pic2.png'
 
-    #Call the OCR function
-    text = ocr(image)
+    # Call the OCR function
+    img, text = ocr(image_name)
 
-    #Print the recognized text
+    # Print the recognized text
     print(text)
 
 if __name__ == '__main__':
