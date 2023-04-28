@@ -42,8 +42,10 @@ def only_eq_solve(equations):
 
 def main():
     #Test the function.
-    # print(equation_solver(["2x + 3y + 4z = 5", "6x + 7y + 8z = 9", "10x + 11y + 12z = 13"]))
-    print(ocr_solve("pic.png"))
+    # print(equation_solver(["2x + -3y + 4z = 5", "6x + 7y + 8z = 9", "10x + 11y + 12z = 13"]))
+    # print(equation_solver(["-1x + 0y + 0z = 5", "0x + 1y + 0z = 9", "0x + 0y + 1z = 13"]))
+
+    # print(ocr_solve("pic.png"))
     return
 
 main()

@@ -5,7 +5,6 @@ import os
 
 # OCR function
 def ocr(image_name):
-    pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract'
 
     # Get image path
     path = os.path.dirname(os.path.abspath(__file__))
@@ -18,10 +17,13 @@ def ocr(image_name):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Threshold the image to make the text more distinct
-    thresh = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    img_thresh = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+    # convert from GRB to RGB
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # Perform OCR to extract text from the image
-    text = pytesseract.image_to_string(thresh, lang='eng', config='--psm 6')
+    text = pytesseract.image_to_string(img, lang='eng', config='--psm 6')
 
     # Split the text into lines and remove empty lines
     lines = [line.strip() for line in text.split('\n') if line.strip()]
@@ -30,19 +32,29 @@ def ocr(image_name):
     print('OCR detected the following equations:')
     for line in lines:
         print(line)
-    confirm = input('Is this correct? (y/n) ').strip().lower()
+    # confirm = input('Is this correct? (y/n) ').strip().lower()
 
-    # If the detected equations are not correct, prompt the user to input them manually
-    if not confirm:
-        lines = []
-        num_equations = int(input('How many equations do you want to input? '))
-        for i in range(num_equations):
-            line = input(f'Enter equation {i + 1}: ')
-            lines.append(line)
+    # # If the detected equations are not correct, prompt the user to input them manually
+    # if not confirm:
+    #     lines = []
+    #     num_equations = int(input('How many equations do you want to input? '))
+    #     for i in range(num_equations):
+    #         line = input(f'Enter equation {i + 1}: ')
+    #         lines.append(line)
 
     # Return the list of equations
     return img, lines
 
+def resize(img = cv2.imread):
+    scale = 60 / 100
+
+    width = int(img.shape[1] * scale)
+    height = int(img.shape[0] * scale)
+    dim = (width, height)
+
+    resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+
+    return resized
 
 # Main function
 def main():
