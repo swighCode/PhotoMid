@@ -1,6 +1,9 @@
 import numpy as np
 import re
 from OpenCv import ocr
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from mpl_toolkits.mplot3d import Axes3D
 
 # This function is meant to solve linear systems from an array of linear equations.
 # It will return the solution to the system in parametric form.
@@ -32,7 +35,7 @@ def equation_solver(equations=[]):
         constant_matrix[i, :] = constants
     # Solve the system of equations. (Note, we want the answer in parametric form.)
     # Check if determinant is 0
-    if np.linalg.det(coefficient_matrix) == 0:
+    if np.linalg.det(coefficient_matrix) < 0.0001:
         parametric_form(coefficient_matrix, constant_matrix)
         return
     solution = np.linalg.solve(coefficient_matrix, constant_matrix)
@@ -63,6 +66,33 @@ def parametric_form(A, b):
         print("{} = {:.2f}t + {:.2f}".format(var,
               solution_space[i, 0], solution_space[i, 1]))
 
+# This function is meant to plot the solution to a system of equations in parametric form.
+# Note that this requires the equation to be written in a certain way, i.e 2x + 3y + 4z = 5.
+# -(With z being the third variable), the X and Y can be reversed, but the Z must be the third variable.
+# To avoid this, the equation solver would have to keep track of the Z coefficient.
+
+
+def plotter(coefficient_matrix, constant_matrix):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(coefficient_matrix.shape[0]):
+        eq = coefficient_matrix[i]
+        const = constant_matrix[i]
+        x = np.linspace(-10, 10, 100)
+        y = np.linspace(-10, 10, 100)
+        X, Y = np.meshgrid(x, y)
+        Z = (const - eq[0]*X - eq[1]*Y) / eq[2]
+        ax.plot_surface(X, Y, Z, cmap='cool', alpha=0.5)
+    # Add solution to z
+    sol = np.linalg.solve(coefficient_matrix, constant_matrix)
+    # Plot the solution to the system.
+    ax.scatter(sol[0], sol[1], sol[2], c='r', s=30)
+    ax.text(sol[0], sol[1], sol[2], 'Solution', color='r', fontsize=12)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
+
 
 def ocr_solve(file_name):
     img, equations = ocr(file_name)
@@ -79,7 +109,8 @@ def main():
     # Test the function.
     # equations = ['2x + 3y + 4z = 5', '3x + 4y + 5z = 6', '4x + 5y + 6z = 7']
     # Check if determinant is 0
-    print(ocr_solve("pic.png"))
+    # print(ocr_solve("pic.png"))
+    plotter(np.array([[1, 2, 3], [4, 1, 5], [7, 3, 9]]), np.array([1, 6, 3]))
     return
 
 
