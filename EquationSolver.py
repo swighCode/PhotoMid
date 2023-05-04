@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # The function will also return the number of solutions to the system, if any.
 
 
-def equation_solver(equations=[]):
+def matrix_generator(equations=[]):
     var_regex = r'([-+]?\d*)([a-z])'
     const_regex = r'([-+]?\d+)$'
 
@@ -33,14 +33,17 @@ def equation_solver(equations=[]):
         coefficient_matrix[i, :] = coeffs
         # Add the constants to the matrix of constants.
         constant_matrix[i, :] = constants
-    # Solve the system of equations. (Note, we want the answer in parametric form.)
-    # Check if determinant is 0
+    return coefficient_matrix, constant_matrix
+
+
+def equation_solver(equations=[]):
+    coefficient_matrix, constant_matrix = matrix_generator(equations)
+    # Check if the determinant of the coefficient matrix is 0. Floating point error is accounted for.
     if np.linalg.det(coefficient_matrix) < 0.0001:
         parametric_form(coefficient_matrix, constant_matrix)
         return
     solution = np.linalg.solve(coefficient_matrix, constant_matrix)
     return solution
-
 # This function is meant to solve linear systems from an array of linear equations when the system is in augmented form.
 
 
