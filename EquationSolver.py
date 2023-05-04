@@ -44,7 +44,6 @@ def equation_solver(equations=[]):
         return
     solution = np.linalg.solve(coefficient_matrix, constant_matrix)
     return solution
-
 # This function is meant to solve linear systems from an array of linear equations when the system is in augmented form.
 
 
