@@ -2,9 +2,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QDialog, QApplication, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from functools import partial
 import numpy as np
 from OpenCv import ocr
-from EquationSolver import only_eq_solve
+from EquationSolver import matrix_generator,only_eq_solve, plotter
 
 # Main GUI class
 class App(QWidget):
@@ -31,6 +32,7 @@ class App(QWidget):
         equations_string = "\n".join(equations)
 
         solution = only_eq_solve(equations)
+        coef_matrix, const_matrix = matrix_generator(equations)
         solution_string = np.array2string(solution, separator=' ')
 
         # Add the labels to a QVBoxLayout
@@ -45,10 +47,8 @@ class App(QWidget):
         label_r_input = QLabel()
         input_string = "Equation recognized: \n" + equations_string
         label_r_input.setText(input_string)
-        button_y = QPushButton("I recognize this image")
-        button_y.clicked.connect(self.on_clicked_y)
-        button_n = QPushButton("I do NOT recognize this image")
-        button_n.clicked.connect(self.on_clicked_n)
+        button_plot = QPushButton("plot solution")
+        button_plot.clicked.connect(partial(self.on_clicked_plot, coef_matrix, const_matrix))
         label_output = QLabel()
         output_string = "Equation solution: \n" + solution_string
         label_output.setText(output_string)
@@ -61,18 +61,15 @@ class App(QWidget):
         layout.addWidget(label_input, alignment=Qt.AlignCenter)
         layout.addWidget(label_image, alignment=Qt.AlignCenter)
         layout.addWidget(label_r_input, alignment=Qt.AlignCenter)
-        layout.addWidget(button_y)
-        layout.addWidget(button_n)
+        layout.addWidget(button_plot, alignment=Qt.AlignCenter)
         layout.addWidget(user_button)
         layout.addWidget(label_output, alignment=Qt.AlignCenter)
 
         self.setLayout(layout)
 
-    def on_clicked_y(self):
+    def on_clicked_plot(self, coef_matrix, const_matrix):
+        plotter(coef_matrix, const_matrix)
         print("confirmation")
-
-    def on_clicked_n(self):
-        print("Wrong input")
 
     # Function for opening input dialog
     def showInputDialog(self):

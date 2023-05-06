@@ -110,12 +110,10 @@ def only_eq_solve(equations):
 
 def main():
     # Test the function.
-    # equations = ['2x + 3y + 4z = 5', '3x + 4y + 5z = 6', '4x + 5y + 6z = 7']
-    # Check if determinant is 0
-    # print(ocr_solve("pic.png"))
-    # Testing push
-    plotter(np.array([[1, 2, 3], [4, 1, 5], [7, 3, 9]]), np.array([1, 6, 3]))
-    return
+    equations = ['1x+2y+3z=1', '4x+1y+5z=6', '7x+3y+9z=3']
+    solution = equation_solver(equations)
+    print(solution)
 
 
-main()
+if __name__ == '__main__':
+    main()

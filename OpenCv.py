@@ -28,6 +28,12 @@ def ocr(image_name):
     # Split the text into lines and remove empty lines
     lines = [line.strip() for line in text.split('\n') if line.strip()]
 
+    # turn the lines to lower case
+    lines = [line.lower() for line in lines]
+
+    # remove any whitespace in the lines
+    lines = [line.replace(' ', '') for line in lines]
+
     # Prompt the user to confirm the detected equations
     print('OCR detected the following equations:')
     for line in lines:
@@ -46,7 +52,7 @@ def ocr(image_name):
     return img, lines
 
 def resize(img = cv2.imread):
-    scale = 60 / 100
+    scale = 0.6
 
     width = int(img.shape[1] * scale)
     height = int(img.shape[0] * scale)
@@ -56,7 +62,6 @@ def resize(img = cv2.imread):
 
     return resized
 
-# Main function
 def main():
     # Insert name of image
     image_name = 'pic.png'
