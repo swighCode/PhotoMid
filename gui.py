@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtWidgets import QDialog, QApplication, QWidget, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QDialog, QApplication, QWidget, QLabel, QVBoxLayout, QFileDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from functools import partial
@@ -13,10 +13,17 @@ class App(QWidget):
         super().__init__()
         self.title = 'PhotoMid'
         self.left = 800
-        self.top = 500
-        self.width = 800
-        self.height = 500
+        self.top = 200
+        self.width = 1000
+        self.height = 800
+        self.file_name = "pic.png"
+        self.preselected_image = QPixmap(self.file_name)
+        self.new_image = None
+        self.label_image = QLabel(self)
+        self.label_image.setFixedSize(1000, 500)
+        self.set_image()
         self.initUI()
+
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -24,31 +31,36 @@ class App(QWidget):
 
         self.create_gui()
 
+
     def create_gui(self):
-
-        file_name = "pic.png"
-
-        img, equations = ocr(file_name)
-        equations_string = "\n".join(equations)
-
-        solution = only_eq_solve(equations)
-        coef_matrix, const_matrix = matrix_generator(equations)
-        solution_string = np.array2string(solution, separator=' ')
-
         # Add the labels to a QVBoxLayout
         layout = QVBoxLayout()
 
-        # displayed objects in GUI
-        image = QPixmap(file_name)
-        image = resize(image)
-        label_image = QLabel()
-        label_image.setPixmap(image)
-        label_input = QLabel("Image input:")
+        # Display image in GUI, empty if no image selected
+        self.set_image()
+
+        # Retrieve and update solution
+        equations_string, solution_string, coef_matrix, const_matrix = self.solve_equation()
+
+        # Labels and buttons
+        label_input = QLabel("Image, if selected:")
         label_r_input = QLabel()
         input_string = "Equation recognized: \n" + equations_string
         label_r_input.setText(input_string)
+
+        # Button for Image selection
+        button_image = QPushButton("Choose new image", self)
+        button_image.clicked.connect(self.showFileDialog)
+
+        # Button for updating solution
+        button_solution = QPushButton("Update solution", self)
+        button_solution.clicked.connect(self.on_clicked_solution)
+
+        # Button for plotting solution
         button_plot = QPushButton("plot solution")
         button_plot.clicked.connect(partial(self.on_clicked_plot, coef_matrix, const_matrix))
+
+        # Label for solution
         label_output = QLabel()
         output_string = "Equation solution: \n" + solution_string
         label_output.setText(output_string)
@@ -59,14 +71,42 @@ class App(QWidget):
 
         # displayed object's order in GUI
         layout.addWidget(label_input, alignment=Qt.AlignCenter)
-        layout.addWidget(label_image, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label_image, alignment=Qt.AlignCenter)
+        layout.addWidget(button_image, alignment=Qt.AlignCenter)
+        layout.addWidget(button_solution, alignment=Qt.AlignCenter)
         layout.addWidget(label_r_input, alignment=Qt.AlignCenter)
         layout.addWidget(button_plot, alignment=Qt.AlignCenter)
         layout.addWidget(user_button)
         layout.addWidget(label_output, alignment=Qt.AlignCenter)
 
+        # Set the layout on the application's window
         self.setLayout(layout)
 
+    # Update the GUI image
+    def set_image(self):
+        if self.new_image is not None:
+            self.label_image.setPixmap(self.new_image.scaled(self.label_image.width(), self.label_image.height(), Qt.KeepAspectRatio))
+        elif self.preselected_image is not None:
+            self.label_image.setPixmap(self.preselected_image.scaled(self.label_image.width(), self.label_image.height(), Qt.KeepAspectRatio))
+        else:
+            self.label_image.clear()
+
+    # Function for retrieving solution from solver
+    def solve_equation(self):
+        _, equations = ocr(self.file_name)
+        equations_string = "\n".join(equations)
+
+        solution = only_eq_solve(equations)
+        coef_matrix, const_matrix = matrix_generator(equations)
+        solution_string = np.array2string(solution, separator=' ')
+        return equations_string, solution_string, coef_matrix, const_matrix
+    
+    # Function for button updating solution
+    def on_clicked_solution(self):
+        _, _, coef_matrix, const_matrix = self.solve_equation()
+        self.create_gui()
+
+    # Function for button plotting solution
     def on_clicked_plot(self, coef_matrix, const_matrix):
         plotter(coef_matrix, const_matrix)
         print("confirmation")
@@ -80,6 +120,16 @@ class App(QWidget):
             text = dialog.text()
             # Do something with the text, e.g. save it to a file or print it
             print("User entered:", text)
+
+    def showFileDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "All Files (*);;Image Files (*.png *.jpg *.jpeg *.pdf)", options=options)
+        if fileName:
+            # Update the new image
+            self.new_image = QPixmap(fileName)
+            # Update the GUI image
+            self.set_image()
 
 
 # Class for logic of input from user 
