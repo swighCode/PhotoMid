@@ -28,6 +28,12 @@ def ocr(image_name):
     # Split the text into lines and remove empty lines
     lines = [line.strip() for line in text.split('\n') if line.strip()]
 
+    # Remove any lines that contain only whitespace
+    lines = [line for line in lines if line.strip()]
+
+    # Remove any non-alphanumeric characters except +, -, =, and *
+    lines = [''.join(c for c in line if c.isalnum() or c in ['+', '-', '=', '*']) for line in lines]
+
     # turn the lines to lower case
     lines = [line.lower() for line in lines]
 
