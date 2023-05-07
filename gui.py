@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QDialog, QApplication, QWidget, QLabel, QVBoxLayout, QFileDialog
 from PyQt5.QtGui import QPixmap
@@ -44,9 +45,9 @@ class App(QWidget):
 
         # Labels and buttons
         label_input = QLabel("Image, if selected:")
-        label_r_input = QLabel()
-        input_string = "Equation recognized: \n" + equations_string
-        label_r_input.setText(input_string)
+        self.label_equations = QLabel()
+        self.input_string = "Equation recognized: \n" + equations_string
+        self.label_equations.setText(self.input_string)
 
         # Button for Image selection
         button_image = QPushButton("Choose new image", self)
@@ -74,7 +75,7 @@ class App(QWidget):
         layout.addWidget(self.label_image, alignment=Qt.AlignCenter)
         layout.addWidget(button_image, alignment=Qt.AlignCenter)
         layout.addWidget(button_solution, alignment=Qt.AlignCenter)
-        layout.addWidget(label_r_input, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label_equations, alignment=Qt.AlignCenter)
         layout.addWidget(button_plot, alignment=Qt.AlignCenter)
         layout.addWidget(user_button)
         layout.addWidget(label_output, alignment=Qt.AlignCenter)
@@ -103,8 +104,16 @@ class App(QWidget):
     
     # Function for button updating solution
     def on_clicked_solution(self):
-        _, _, coef_matrix, const_matrix = self.solve_equation()
-        self.create_gui()
+        if self.new_image is None:
+            print("No image selected")
+            return
+        if not os.path.exists(self.file_name):
+            print("File not found")
+            return
+        equations_string, solution_string, coef_matrix, const_matrix = self.solve_equation()
+        self.label_equations.setText("Equation recognized: \n" + equations_string)
+        self.label_equations.repaint()
+        #self.create_gui()
 
     # Function for button plotting solution
     def on_clicked_plot(self, coef_matrix, const_matrix):
