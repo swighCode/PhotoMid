@@ -23,16 +23,13 @@ def ocr(image_name):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # Perform OCR to extract text from the image
-    text = pytesseract.image_to_string(img, lang='eng', config='--psm 6')
+    text = pytesseract.image_to_string(img, config='--psm 6 --oem 1 -c tessedit_char_whitelist=0123456789xyz-+=XYZ')
 
     # Split the text into lines and remove empty lines
     lines = [line.strip() for line in text.split('\n') if line.strip()]
 
     # Remove any lines that contain only whitespace
     lines = [line for line in lines if line.strip()]
-
-    # Remove any non-alphanumeric characters except +, -, =, and *
-    lines = [''.join(c for c in line if c.isalnum() or c in ['+', '-', '=', '*']) for line in lines]
 
     # turn the lines to lower case
     lines = [line.lower() for line in lines]
