@@ -17,7 +17,7 @@ class App(QWidget):
         self.top = 200
         self.width = 1000
         self.height = 800
-        self.file_name = "pic.png"
+        self.file_name = 'pic.png'
         self.preselected_image = QPixmap(self.file_name)
         self.new_image = None
         self.label_image = QLabel(self)
@@ -62,9 +62,9 @@ class App(QWidget):
         button_plot.clicked.connect(partial(self.on_clicked_plot, coef_matrix, const_matrix))
 
         # Label for solution
-        label_output = QLabel()
+        self.label_solution = QLabel()
         output_string = "Equation solution: \n" + solution_string
-        label_output.setText(output_string)
+        self.label_solution.setText(output_string)
 
         # Create a button and connect it to the showInputDialog function
         user_button = QPushButton("Open input dialog", self)
@@ -78,7 +78,7 @@ class App(QWidget):
         layout.addWidget(self.label_equations, alignment=Qt.AlignCenter)
         layout.addWidget(button_plot, alignment=Qt.AlignCenter)
         layout.addWidget(user_button)
-        layout.addWidget(label_output, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label_solution, alignment=Qt.AlignCenter)
 
         # Set the layout on the application's window
         self.setLayout(layout)
@@ -112,8 +112,8 @@ class App(QWidget):
             return
         equations_string, solution_string, coef_matrix, const_matrix = self.solve_equation()
         self.label_equations.setText("Equation recognized: \n" + equations_string)
-        self.label_equations.repaint()
-        #self.create_gui()
+        self.label_solution.setText("Equation solution: \n" + solution_string)
+
 
     # Function for button plotting solution
     def on_clicked_plot(self, coef_matrix, const_matrix):
@@ -130,6 +130,7 @@ class App(QWidget):
             # Do something with the text, e.g. save it to a file or print it
             print("User entered:", text)
 
+    # Function for opening file dialog
     def showFileDialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -139,6 +140,12 @@ class App(QWidget):
             self.new_image = QPixmap(fileName)
             # Update the GUI image
             self.set_image()
+            # Update the file name
+            self.set_file_name(fileName)
+
+    # Function for updating image name
+    def set_file_name(self, file_name):
+        self.file_name = file_name
 
 
 # Class for logic of input from user 
