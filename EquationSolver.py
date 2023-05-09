@@ -154,13 +154,16 @@ def main():
     # Check if determinant is 0
     # print(ocr_solve("pic.png"))
     # Testing push
-    print(equation_solver(
-        ['2x + 3y + 4z = 5', '4x + 6y + 8z = 10', '10x - 5y + 6z = 7']))
-    print(matrix_generator(
-        ['2x + 3y + 4z = 5', 'x - 4y + 5z = 6', '4x + 2y + 6z = 7']))
-    singular_plotter(
-        np.array([[1, 2, 3], [2, 4, 6], [3, 6, 9]]), np.array([[1], [2], [3]]))
-    return
+    # print(equation_solver(
+    #     ['2x + 3y + 4z = 5', '4x + 6y + 8z = 10', '10x - 5y + 6z = 7']))
+    # print(matrix_generator(
+    #     ['2x + 3y + 4z = 5', 'x - 4y + 5z = 6', '4x + 2y + 6z = 7']))
+    # singular_plotter(
+    #     np.array([[1, 2, 3], [2, 4, 6], [3, 6, 9]]), np.array([[1], [2], [3]]))
+    # return
+    equations1 = ['1x+1y+2z=1', '2x-1y+1z=-1', '2x+2y-2z=2']
+    equations2 = ['1x+3y+2z=1', '-1x+1y+1z=2', '-1x+1y+2z=3']
+    plotter_main(equations1)
 
 
 if __name__ == '__main__':

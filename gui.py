@@ -18,6 +18,7 @@ class App(QWidget):
         self.width = 1000
         self.height = 800
         self.file_name = 'pic.png'
+        self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = "", "", None, None
         self.preselected_image = QPixmap(self.file_name)
         self.new_image = None
         self.label_image = QLabel(self)
@@ -41,12 +42,12 @@ class App(QWidget):
         self.set_image()
 
         # Retrieve and update solution
-        equations_string, solution_string, coef_matrix, const_matrix = self.solve_equation()
+        # self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
 
         # Labels and buttons
         label_input = QLabel("Image, if selected:")
         self.label_equations = QLabel()
-        self.input_string = "Equation recognized: \n" + equations_string
+        self.input_string = "Equation recognized: \n" + self.equations_string
         self.label_equations.setText(self.input_string)
 
         # Button for Image selection
@@ -59,11 +60,11 @@ class App(QWidget):
 
         # Button for plotting solution
         button_plot = QPushButton("plot solution")
-        button_plot.clicked.connect(partial(self.on_clicked_plot, coef_matrix, const_matrix))
+        button_plot.clicked.connect(partial(self.on_clicked_plot))
 
         # Label for solution
         self.label_solution = QLabel()
-        output_string = "Equation solution: \n" + solution_string
+        output_string = "Equation solution: \n" + self.solution_string
         self.label_solution.setText(output_string)
 
         # Create a button and connect it to the showInputDialog function
@@ -102,6 +103,10 @@ class App(QWidget):
         solution_string = np.array2string(solution, separator=' ')
         return equations_string, solution_string, coef_matrix, const_matrix
     
+    # Function for updating solution variables
+    def set_solutions(self):
+        self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
+    
     # Function for button updating solution
     def on_clicked_solution(self):
         if self.new_image is None:
@@ -110,15 +115,18 @@ class App(QWidget):
         if not os.path.exists(self.file_name):
             print("File not found")
             return
-        equations_string, solution_string, coef_matrix, const_matrix = self.solve_equation()
-        self.label_equations.setText("Equation recognized: \n" + equations_string)
-        self.label_solution.setText("Equation solution: \n" + solution_string)
-
+        self.set_solutions()
+        self.label_equations.setText("Equation recognized: \n" + self.equations_string)
+        self.label_solution.setText("Equation solution: \n" + self.solution_string)
 
     # Function for button plotting solution
-    def on_clicked_plot(self, coef_matrix, const_matrix):
-        plotter(coef_matrix, const_matrix)
-        print("confirmation")
+    def on_clicked_plot(self):
+        self.set_solutions
+        if self.coef_matrix is None or self.const_matrix is None:
+            print("Nothing to plot")
+            return
+        plotter(self.coef_matrix, self.const_matrix)
+        print("Plotting")
 
     # Function for opening input dialog
     def showInputDialog(self):
