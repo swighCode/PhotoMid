@@ -1,12 +1,12 @@
 import os
 from PyQt5.QtWidgets import *
-from PyQt5.QtWidgets import QDialog, QApplication, QWidget, QLabel, QVBoxLayout, QFileDialog
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 from functools import partial
 import numpy as np
 from OpenCv import ocr
 from EquationSolver import matrix_generator,only_eq_solve, plotter
+from style import stylesheet
 
 # Main GUI class
 class App(QWidget):
@@ -29,8 +29,8 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle(self.title)
+        self.setStyleSheet(stylesheet)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
         self.create_gui()
 
 
@@ -74,6 +74,7 @@ class App(QWidget):
         # displayed object's order in GUI
         layout.addWidget(label_input, alignment=Qt.AlignCenter)
         layout.addWidget(self.label_image, alignment=Qt.AlignCenter)
+        layout.setAlignment(self.label_image, Qt.AlignCenter)
         layout.addWidget(button_image, alignment=Qt.AlignCenter)
         layout.addWidget(button_solution, alignment=Qt.AlignCenter)
         layout.addWidget(self.label_equations, alignment=Qt.AlignCenter)
@@ -186,9 +187,13 @@ def resize(img: QPixmap) -> QPixmap:
     scaled_img = img.scaled(width, height, aspectRatioMode=Qt.IgnoreAspectRatio, transformMode=Qt.FastTransformation)
     return scaled_img
 
+# Manipulate GUI settings
+def app_settings(app: QApplication([])):
+    app.setWindowIcon(QIcon("./app_images/logo3"))
 
 if __name__ == '__main__':
     app = QApplication([])
+    app_settings(app)
     window = App()
     window.show()
     app.exec_()
