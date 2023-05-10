@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from functools import partial
 import numpy as np
 from OpenCv import ocr
-from EquationSolver import matrix_generator,only_eq_solve, plotter
+from EquationSolver import matrix_generator,only_eq_solve, plotter_main
 from style import stylesheet
 
 # Main GUI class
@@ -16,7 +16,7 @@ class App(QWidget):
         self.width = 800
         self.height = 1000
         self.file_name = '' #Starts GUI without an image
-        self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = "", "", None, None
+        self.equations_list, self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = list, "", "", None, None
         self.preselected_image = QPixmap(self.file_name)
         self.new_image = None
         self.label_image = QLabel(self)
@@ -104,6 +104,7 @@ class App(QWidget):
     # Function for updating solution variables
     def set_solutions(self):
         self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
+        self.equations_list = self.equations_string.split("\n")
     
     # Function for button updating solution
     def on_clicked_solution(self):
@@ -123,7 +124,7 @@ class App(QWidget):
         if self.coef_matrix is None or self.const_matrix is None:
             print("Nothing to plot")
             return
-        plotter(self.coef_matrix, self.const_matrix)
+        plotter_main(self.equations_list)
         print("Plotting")
 
     # Function for opening input dialog

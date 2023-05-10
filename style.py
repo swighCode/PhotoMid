@@ -1,4 +1,4 @@
-BLUE = "#0077be"
+PHOTOMID_RED = "#BF0C34"
 BLACK = "#000000"
 DARK_GRAY = "#5A5A5A"
 
@@ -26,4 +26,4 @@ stylesheet = """
         font-weight: %s;
         font-family: "Calibri";
     }
-""" % (BLACK, DARK_GRAY, FONTSIZE, "normal", BLUE, BLACK, BLUE, 10, FONTSIZE, "normal")
+""" % (BLACK, DARK_GRAY, FONTSIZE, "normal", PHOTOMID_RED, BLACK, PHOTOMID_RED, 10, FONTSIZE, "normal")
