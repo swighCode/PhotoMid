@@ -1,6 +1,6 @@
 BLUE = "#0077be"
-LIGHT_GRAY = "#e6e6e6"
-DARK_GRAY = "#333333"
+BLACK = "#000000"
+DARK_GRAY = "#5A5A5A"
 
 FONT = "Calibri"
 FONTSIZE = 16
@@ -26,4 +26,4 @@ stylesheet = """
         font-weight: %s;
         font-family: "Calibri";
     }
-""" % (LIGHT_GRAY, DARK_GRAY, FONTSIZE, "normal", BLUE, LIGHT_GRAY, BLUE, 10, FONTSIZE, "normal")
+""" % (BLACK, DARK_GRAY, FONTSIZE, "normal", BLUE, BLACK, BLUE, 10, FONTSIZE, "normal")

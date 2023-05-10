@@ -13,16 +13,15 @@ class App(QWidget):
     def __init__(self):
         super().__init__()
         self.title = 'PhotoMid'
-        self.left = 800
-        self.top = 200
-        self.width = 1000
-        self.height = 800
-        self.file_name = 'pic.png'
+        self.width = 800
+        self.height = 1000
+        self.file_name = '' #Starts GUI without an image
         self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = "", "", None, None
         self.preselected_image = QPixmap(self.file_name)
         self.new_image = None
         self.label_image = QLabel(self)
-        self.label_image.setFixedSize(1000, 500)
+        IMG_SIZE = 750
+        self.label_image.setFixedSize(IMG_SIZE, IMG_SIZE)
         self.set_image()
         self.initUI()
 
@@ -30,7 +29,8 @@ class App(QWidget):
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setStyleSheet(stylesheet)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.setGeometry(0, 0, self.width, self.height)
+        center_window(self)
         self.create_gui()
 
 
@@ -40,9 +40,6 @@ class App(QWidget):
 
         # Display image in GUI, empty if no image selected
         self.set_image()
-
-        # Retrieve and update solution
-        # self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
 
         # Labels and buttons
         label_input = QLabel("Image, if selected:")
@@ -162,7 +159,10 @@ class InputDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         
-        self.setWindowTitle("Enter text")
+        # Window settings
+        self.setWindowTitle("Enter equation / equations")
+        self.setGeometry(0, 0, 300, 50)
+        center_window(self)
         
         # Create a layout for the dialog
         layout = QVBoxLayout(self)
@@ -190,6 +190,21 @@ def resize(img: QPixmap) -> QPixmap:
 # Manipulate GUI settings
 def app_settings(app: QApplication([])):
     app.setWindowIcon(QIcon("./app_images/logo3"))
+
+# Centers the window on user's screen
+def center_window(self):
+    # Get the geometry of the screen
+    screen = QDesktopWidget().screenGeometry()
+            
+    # Get the geometry of the main window
+    window = self.geometry()
+            
+    # Calculate the center point of the screen
+    center_point = screen.center()
+            
+    # Move the main window to the center of the screen
+    window.moveCenter(center_point)
+    self.setGeometry(window)
 
 if __name__ == '__main__':
     app = QApplication([])
