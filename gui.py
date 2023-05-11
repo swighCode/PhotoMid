@@ -58,7 +58,7 @@ class App(QWidget):
         button_solution.clicked.connect(self.on_clicked_solution)
 
         # Button for plotting solution
-        button_plot = QPushButton("plot solution")
+        button_plot = QPushButton("Plot solution")
         button_plot.clicked.connect(partial(self.on_clicked_plot))
 
         # Label for solution
@@ -100,7 +100,12 @@ class App(QWidget):
 
         solution = only_eq_solve(equations)
         coef_matrix, const_matrix = matrix_generator(equations)
-        solution_string = np.array2string(solution, separator=' ')
+
+        # solution_string can come either as a string or as np.array
+        if isinstance(solution, str):
+            solution_string = solution
+        else:
+            solution_string = np.array2string(solution, separator=' ')
         return equations_string, solution_string, coef_matrix, const_matrix
     
     # Function for solving and updating solution variables for manual input

@@ -51,8 +51,8 @@ def equation_solver(equations=[]):
     coefficient_matrix, constant_matrix = matrix_generator(equations)
     # Check if the determinant of the coefficient matrix is 0. Floating point error is accounted for.
     if np.linalg.det(coefficient_matrix) < 0.0001:
-        parametric_form(coefficient_matrix, constant_matrix)
-        return
+        solution = parametric_form(coefficient_matrix, constant_matrix)
+        return solution
     solution = np.linalg.solve(coefficient_matrix, constant_matrix)
     return solution
 # This function is meant to solve linear systems from an array of linear equations when the system is in augmented form.
@@ -60,17 +60,16 @@ def equation_solver(equations=[]):
 # Parametric solver is meant to solve linear systems from an array of linear equations.
 # This solution was "borrowed" from https://stackoverflow.com/questions/54971085/how-to-solve-linear-equations-with-parametrization
 
-
 def parametric_form(a, b):
     one_solution = np.linalg.lstsq(a, b, rcond=None)[0]
     null_space_basis = scipy.linalg.null_space(a)
+    result = ""
     for i in range(a.shape[1]):
-        sys.stdout.write('x{} = {}'.format(i, one_solution[i]))
+        result += 'x{} = {}'.format(i, one_solution[i])
         for j in range(null_space_basis.shape[1]):
-            sys.stdout.write(' + ({}) * t{}'.format(null_space_basis[i, j], j))
-        sys.stdout.write('\n')
-    return
-
+            result += ' + ({}) * t{}'.format(null_space_basis[i, j], j)
+        result += '\n'
+    return result
 
 # This function is meant to plot the solution to a system of equations in parametric form.
 # Note that this requires the equation to be written in a certain way, i.e 2x + 3y + 4z = 5.
@@ -93,7 +92,6 @@ def plotter(coefficient_matrix, constant_matrix):
     sol = np.linalg.solve(coefficient_matrix, constant_matrix)
     # Plot the solution to the system.
     ax.scatter(sol[0], sol[1], sol[2], c='r', s=30)
-    ax.text(sol[0], sol[1], sol[2], 'Solution', color='r', fontsize=12)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
@@ -163,7 +161,8 @@ def main():
     # return
     equations1 = ['1x+1y+2z=1', '2x-1y+1z=-1', '2x+2y-2z=2']
     equations2 = ['1x+3y+2z=1', '-1x+1y+1z=2', '-1x+1y+2z=3']
-    plotter_main(equations1)
+    equationLD = ['-2x+3y+9z=4', '1z+2y-2z=-1', '2x+4y-4z=-2']
+    plotter_main(equationLD)
 
 
 if __name__ == '__main__':
