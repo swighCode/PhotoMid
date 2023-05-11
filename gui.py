@@ -6,6 +6,7 @@ from functools import partial
 import numpy as np
 from OpenCv import ocr
 from EquationSolver import matrix_generator,only_eq_solve, plotter_main
+from equationtype import manual_equation
 from style import stylesheet
 
 # Main GUI class
@@ -101,6 +102,13 @@ class App(QWidget):
         solution_string = np.array2string(solution, separator=' ')
         return equations_string, solution_string, coef_matrix, const_matrix
     
+    def solve_equation_with_list(self, equations_string: str, equations_list: list):
+        solution = only_eq_solve(equations_list)
+        coef_matrix, const_matrix = matrix_generator(equations_list)
+        solution_string = np.array2string(solution, separator=' ')
+        self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = equations_string, solution_string, coef_matrix, const_matrix
+        self.equations_list = self.equations_string.split("\n")
+    
     # Function for updating solution variables
     def set_solutions(self):
         self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
@@ -136,6 +144,10 @@ class App(QWidget):
             text = dialog.text()
             # Do something with the text, e.g. save it to a file or print it
             print("User entered:", text)
+            equation_as_list = manual_equation(text)
+            solve_equation_with_list(text, equation_as_list)
+
+
 
     # Function for opening file dialog
     def showFileDialog(self):

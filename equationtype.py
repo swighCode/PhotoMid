@@ -34,6 +34,11 @@ def get_equations_list():
 
 ################################################################################
 
+def manual_equation(text: str) -> list:
+    select_equation_type(text)
+    equations_as_list = get_equations_list()
+    return equations_as_list
+
 test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
 MATRIX_SIZE = 3
 
@@ -44,7 +49,7 @@ def select_equation_type(equation: str):
         if len(equations) != MATRIX_SIZE:
             print("Error, cannot find three equations, equations found: %d" % len(equations))
             return
-        whitespace_type()
+        whitespace_type(equation)
         return
     string_type(equation)
 
@@ -63,16 +68,19 @@ def string_type(equation: str):
                 break
 
     # If equation doesn't exist, append it to the first available column
+    equation_index = 1
     if not exists:
         for col in CSV_HEADERS:
             if not any(row[col] for row in rows):
-                rows[0][col] = equation
-                update_equation(1, equation)
+                rows[0][f'Equation{equation_index}'] = equation
+                equations_list = ','.join([rows[0][f'Equation{i}'] for i in range(1, 4)])
+                rows[0]['EquationsList'] = equations_list
                 break
 
-    # # If equation doesn't exist, append it to the next column
-    # if not exists:
-    #     update_equation(int(next_column) + 1, equation)
+    with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADERS)
+        writer.writeheader()
+        writer.writerow(rows[0])
 
 # Updating csv file for whitespace equation format
 def whitespace_type(equation: str):
@@ -80,19 +88,20 @@ def whitespace_type(equation: str):
     for i in range(len(equations)):
         update_equation(i+1, equations[i])
 
-
 # main function
 def main():
     write_initial_data()
     #update_equation(1, "hejpadig")
-    # test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
+    test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
+    equation_list =  manual_equation(test_equation)
+    print(equation_list)
     # whitespace_type(test_equation)
-    eq1 = "1x+3y+2z=1"
-    eq2 = "-1x+1y+1z=2" 
-    eq3 = "-1x+1y+2z=3"
-    string_type(eq1)
-    string_type(eq2)
-    string_type(eq3)
+    #eq1 = "1x+3y+2z=1"
+    #eq2 = "-1x+1y+1z=2" 
+    #eq3 = "-1x+1y+2z=3"
+    #string_type(eq1)
+    #string_type(eq2)
+    #string_type(eq3)
 
 if __name__ == "__main__":
     main()
