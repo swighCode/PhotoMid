@@ -20,6 +20,7 @@ class App(QWidget):
         self.equations_list, self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = list, "", "", None, None
         self.preselected_image = QPixmap(self.file_name)
         self.new_image = None
+        self.manual_equation = False
         self.label_image = QLabel(self)
         IMG_SIZE = 750
         self.label_image.setFixedSize(IMG_SIZE, IMG_SIZE)
@@ -102,33 +103,38 @@ class App(QWidget):
         solution_string = np.array2string(solution, separator=' ')
         return equations_string, solution_string, coef_matrix, const_matrix
     
+    # Function for solving and updating solution variables for manual input
     def solve_equation_with_list(self, equations_string: str, equations_list: list):
         solution = only_eq_solve(equations_list)
         coef_matrix, const_matrix = matrix_generator(equations_list)
         solution_string = np.array2string(solution, separator=' ')
         self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = equations_string, solution_string, coef_matrix, const_matrix
-        self.equations_list = self.equations_string.split("\n")
+        self.equations_list = equations_list
     
     # Function for updating solution variables
     def set_solutions(self):
         self.equations_string, self.solution_string, self.coef_matrix, self.const_matrix = self.solve_equation()
         self.equations_list = self.equations_string.split("\n")
-    
+
     # Function for button updating solution
     def on_clicked_solution(self):
-        if self.new_image is None:
-            print("No image selected")
+        if self.new_image is None and self.manual_equation is False:
+            print("No image selected / manual input")
+            if not os.path.exists(self.file_name):
+                print("File not found")
+                return
             return
-        if not os.path.exists(self.file_name):
-            print("File not found")
-            return
-        self.set_solutions()
+        if self.manual_equation is True:
+            self.manual_equation = False # reset it.
+        else:
+            self.set_solutions()
         self.label_equations.setText("Equation recognized: \n" + self.equations_string)
         self.label_solution.setText("Equation solution: \n" + self.solution_string)
 
     # Function for button plotting solution
     def on_clicked_plot(self):
-        self.set_solutions
+        if self.manual_equation is False: # Check whether there is an ongoing manual input
+            self.set_solutions
         if self.coef_matrix is None or self.const_matrix is None:
             print("Nothing to plot")
             return
@@ -145,9 +151,8 @@ class App(QWidget):
             # Do something with the text, e.g. save it to a file or print it
             print("User entered:", text)
             equation_as_list = manual_equation(text)
-            solve_equation_with_list(text, equation_as_list)
-
-
+            self.solve_equation_with_list(text, equation_as_list)
+            self.manual_equation = True
 
     # Function for opening file dialog
     def showFileDialog(self):
