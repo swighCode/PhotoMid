@@ -9,7 +9,7 @@ def write_initial_data():
     with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADERS)
         writer.writeheader()
-        writer.writerow({'Equation1': "", 'Equation2': "", 'Equation3': "", 'EquationsList': []})
+        writer.writerow({'Equation1': "", 'Equation2': "", 'Equation3': "", 'EquationsList': ""})
 
 # Function to update an equation in the CSV file
 def update_equation(equation_index, new_equation):
@@ -50,61 +50,49 @@ def select_equation_type(equation: str):
 
 # Updating csv file for multiple strings format
 def string_type(equation: str):
-    # Load the CSV file
-    with open('equations.csv', 'r') as f:
-        reader = csv.reader(f)
-        data = list(reader)
-
-    # Determine the next column index to update
-    last_column = data[0][0]
-    next_column = str((int(last_column) + 1) % 3)
-    data[0][0] = next_column
+    with open(CSV_FILE_PATH, 'r', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        rows = [row for row in reader]
 
     # Check if equation is already in the CSV file
     exists = False
-    for i in range(1, 4):
-        if equation == data[i][next_column]:
-            exists = True
-            break
+    for row in rows:
+        for col in CSV_HEADERS:
+            if equation == row[col]:
+                exists = True
+                break
 
-    # If equation doesn't exist, append it to the next column
+    # If equation doesn't exist, append it to the first available column
     if not exists:
-        if len(data[next_column + 1]) < 3:
-            data[next_column + 1].append(equation)
-        else:
-            data[next_column + 1][0] = equation
+        for col in CSV_HEADERS:
+            if not any(row[col] for row in rows):
+                rows[0][col] = equation
+                update_equation(1, equation)
+                break
 
-    # Write the updated data back to the CSV file
-    with open('equations.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(data)
-
+    # # If equation doesn't exist, append it to the next column
+    # if not exists:
+    #     update_equation(int(next_column) + 1, equation)
 
 # Updating csv file for whitespace equation format
 def whitespace_type(equation: str):
     equations = equation.split()
-    # Try parsing equations as three separate strings
-    try:
-        eq1, eq2, eq3 = " ".join(equations).split(" ")
-    except ValueError:
-        # If parsing fails, assume equations is a list of three strings
-        eq1, eq2, eq3 = equations
     for i in range(len(equations)):
-        update_equation(i, equations[i])
+        update_equation(i+1, equations[i])
 
 
 # main function
 def main():
     write_initial_data()
-    test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
+    #update_equation(1, "hejpadig")
+    # test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
+    # whitespace_type(test_equation)
     eq1 = "1x+3y+2z=1"
     eq2 = "-1x+1y+1z=2" 
     eq3 = "-1x+1y+2z=3"
-    update_equation(1, "hejpadig")
-    whitespace_type(test_equation)
-    # string_type(eq1)
-    # string_type(eq2)
-    # string_type(eq3)
+    string_type(eq1)
+    string_type(eq2)
+    string_type(eq3)
 
 if __name__ == "__main__":
     main()
