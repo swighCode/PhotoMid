@@ -92,6 +92,9 @@ def plotter(coefficient_matrix, constant_matrix):
     sol = np.linalg.solve(coefficient_matrix, constant_matrix)
     # Plot the solution to the system.
     ax.scatter(sol[0], sol[1], sol[2], c='r', s=30)
+    solution_text = 'Solution: ' + '[x, y, z] = ' + str(sol)
+    ax.text(sol[0][0], sol[1][0], sol[2][0],
+            solution_text, color='r', fontsize=12)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
@@ -159,10 +162,13 @@ def main():
     # singular_plotter(
     #     np.array([[1, 2, 3], [2, 4, 6], [3, 6, 9]]), np.array([[1], [2], [3]]))
     # return
-    equations1 = ['1x+1y+2z=1', '2x-1y+1z=-1', '2x+2y-2z=2']
-    equations2 = ['1x+3y+2z=1', '-1x+1y+1z=2', '-1x+1y+2z=3']
-    equationLD = ['-2x+3y+9z=4', '1z+2y-2z=-1', '2x+4y-4z=-2']
-    plotter_main(equationLD)
+    coef = np.array([[2, 2, 5], [3, 2, 5], [2, 3, 2]])
+    const = np.array([[1], [2], [3]])
+    print(np.linalg.det(coef))
+    print(np.linalg.matrix_rank(coef))
+    print(np.linalg.eigvals(coef))
+    print(np.linalg.eig(coef))
+    print(parametric_form(coef, const))
 
 
 if __name__ == '__main__':
