@@ -1,5 +1,8 @@
 import csv
 
+# I want to highlight that the first four function for initilazing, reading and writing to the csv file is mainly written by ChatGPT as 
+# we have had no experience of working with this format before.
+
 # Define the CSV file path and the column headers
 CSV_FILE_PATH = 'equations.csv'
 CSV_HEADERS = ['Equation1', 'Equation2', 'Equation3', 'EquationsList']
@@ -13,13 +16,13 @@ def write_initial_data():
 
 # Function to update an equation in the CSV file
 def update_equation(equation_index, new_equation):
-    with open(CSV_FILE_PATH, 'r', newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
+    with open(CSV_FILE_PATH, 'r', newline='') as csvfile: # read mode
+        reader = csv.DictReader(csvfile) # dictonary with column header as key and equation as value.
         rows = [row for row in reader]
     rows[0][f'Equation{equation_index}'] = new_equation
     equations_list = ','.join([rows[0][f'Equation{i}'] for i in range(1, 4)])
     rows[0]['EquationsList'] = equations_list
-    with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
+    with open(CSV_FILE_PATH, 'w', newline='') as csvfile: # write mode
         writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADERS)
         writer.writeheader()
         writer.writerow(rows[0])
@@ -32,28 +35,31 @@ def get_equations_list():
     equations_list = rows[0]['EquationsList']
     return equations_list.split(',')
 
-################################################################################
-
+# GUI uses this function to get the corresponding equation list
 def manual_equation(text: str) -> list:
+    text = text.lower
+    text = text.replace(",", ".") # prevent user from ruining the csv file
     select_equation_type(text)
     equations_as_list = get_equations_list()
     return equations_as_list
 
-test_equation = "1x+3y+2z=1 -1x+1y+1z=2 -1x+1y+2z=3"
-MATRIX_SIZE = 3
+MATRIX_NUM = 3
 
 # Select which method to use for updating csv file
 def select_equation_type(equation: str):
     if " " in equation:
         equations = equation.split()
-        if len(equations) != MATRIX_SIZE:
+        if len(equations) != MATRIX_NUM:
             print("Error, cannot find three equations, equations found: %d" % len(equations))
             return
         whitespace_type(equation)
         return
-    string_type(equation)
+    string_type(equation) # NOT WORKING!!!
 
 # Updating csv file for multiple strings format
+# The idea is that the user inputs one euqtion at the time and the program keeps track of which euqtions have been update and which should be replaced.
+# Have not come up with a good enough idea to implement this though.
+# DOES NOT WORK!!!!
 def string_type(equation: str):
     with open(CSV_FILE_PATH, 'r', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -66,27 +72,15 @@ def string_type(equation: str):
             if equation == row[col]:
                 exists = True
                 break
-
     # If equation doesn't exist, append it to the first available column
-    equation_index = 1
-    if not exists:
-        for col in CSV_HEADERS:
-            if not any(row[col] for row in rows):
-                rows[0][f'Equation{equation_index}'] = equation
-                equations_list = ','.join([rows[0][f'Equation{i}'] for i in range(1, 4)])
-                rows[0]['EquationsList'] = equations_list
-                break
+    # Keep track of what the last used column was then use update_equation()
 
-    with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADERS)
-        writer.writeheader()
-        writer.writerow(rows[0])
 
 # Updating csv file for whitespace equation format
 def whitespace_type(equation: str):
     equations = equation.split()
     for i in range(len(equations)):
-        update_equation(i+1, equations[i])
+        update_equation(i+1, equations[i]) #column index begins from 1
 
 # main function
 def main():
